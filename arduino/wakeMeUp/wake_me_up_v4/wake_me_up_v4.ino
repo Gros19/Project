@@ -50,7 +50,7 @@
       servo.attach(servoPin);
       servo_OFF();
       
-      MsTimer2::set(20000, reset_Count);  //20s period
+      MsTimer2::set(12000, reset_Count);  //20s period
       MsTimer2::start();
     }
     
@@ -59,7 +59,7 @@
       int level = analogRead(SoundSensor);
       Serial.println(level);
       
-      delay(50);
+      delay(70);
       /*소리 값이 8보다 크면 count+1 */
       if (level > 8){
         count++;
