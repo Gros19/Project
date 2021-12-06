@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- JAVA와 연결할 Mapper 파일 설정 -->
+<mapper namespace="poly.persistance.mapper.ICertMapper">
+	<insert id="regist" parameterType="certDTO">
+		insert into cert(
+			who, secret, when
+		)values(
+			#{who}, #{secret}, sysdate
+		)
+	</insert>
+	<select id="validate" parameterType="CertDTO" resultType="CertDTO">
+		select who, secret from cert
+		where
+			who=#{who}
+			and secret= #{secret}
+			and when between sysdate -5/24/60 and sysdate
+	</select>
+	<delete id="remove">
+		delete cert where who=#{who} and secret=#{secret}
+	</delete>
+	<delete id="clearAll">
+		<![CDATA[
+			delete cert where when < sysdate - 10/24/60
+		]]>
+	</delete>
+
+</mapper>

@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- JAVA와 연결할 Mapper 파일 설정 -->
+<mapper namespace="poly.persistance.mapper.UserInfoMapper">
+
+	<!-- 회원가입하기 ( 회원정보 등록하기 )  -->
+<insert id="InsertUserInfo" parameterType="UserInfoDTO">
+	INSERT INTO MEMBER
+		(
+			MEMBER_NO,
+			MEMBER_NAME,
+			MEMBER_ID,
+			MEMBER_PW,
+			MEMBER_EMAIL,
+			MEMBER_ADDR1,
+			MEMBER_ADDR2,
+			MEMBER_AUTH,
+			MEMBER_PHONE,
+			MEMBER_SYSDATE
+		)
+	VALUES (
+			(select nvl(max(a.member_no),0)+1 from member a),
+			#{member_name},
+			#{member_id},
+			#{member_pw},
+			#{member_email},
+			#{member_addr1},
+			#{member_addr2},
+			#{member_auth},
+			#{member_phone},
+			SYSDATE
+	)
+</insert>
+
+<!-- 이메일로 회원 가입 중복 방지하기 -->
+<select id="getUserExists" parameterType="UserInfoDTO" resultType="UserInfoDTO">
+	SELECT DECODE(COUNT(1), 0, 'N', 'Y') AS EXISTS_YN
+		FROM MEMBER
+		WHERE MEMBER_EMAIL = #{member_email}
+</select>
+<select id="getIdExists" parameterType="UserInfoDTO" resultType="UserInfoDTO">
+	SELECT DECODE(COUNT(1), 0, 'N', 'Y') AS EXISTS_YN
+		FROM MEMBER
+		WHERE MEMBER_ID = #{member_id}
+</select>
+
+<!-- 로그인을 위해 아이디와 비밀번호가 일치하는지 확인하기 -->
+<select id="getUserLoginCheck" parameterType="UserInfoDTO" resultType="UserInfoDTO">
+SELECT MEMBER_ID, MEMBER_NAME, MEMBER_EMAIL
+FROM MEMBER
+WHERE MEMBER_ID =#{member_id}
+AND PASSWORD =#{member_pw}
+</select>
+<delete id="clearMember"> <!-- 한민 in 사용방법 -->
+	<![CDATA[
+		DELETE FROM member WHERE member_approve='N' and member_auth in('staff','leader')
+		and member_sysdate < sysdate -10/24/60
+	]]>
+</delete>
+
+<!-- 유저 삭제 -->
+<delete id="DeleteUserInfo" parameterType="UserInfoDTO">
+	 DELETE from MEMBER
+		WHERE (
+		MEMBER_ID,
+		MEMBER_PW
+		)
+</delete>
+<!--  -->
+<update id="userUpdate" parameterType="MemberDTO">
+	update member set
+	member_name = #{member_name},
+	member_pw = #{member_pw},
+	member_phone = #{member_phone},
+	member_addr1 = #{member_addr1},
+	member_addr2 = #{member_addr2}
+	where member_no = #{member_no}
+</update>
+<select id="userInfo" parameterType="int" resultType="MemberDTO">
+	select * from member where member_no = #{member_no}
+</select>
+<delete id="userDelete" parameterType="int">
+	delete from member where member_no = #{member_no}
+</delete>
+<select id = "checkPassword" parameterType="MemberDTO" resultType="int">
+	select count(*) from member where member_no = #{member_no} and member_pw = #{member_pw}
+</select>
+</mapper>

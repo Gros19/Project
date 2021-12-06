@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- JAVA와 연결할 Mapper 파일 설정 -->
+<mapper namespace="poly.persistance.mapper.ILeaderMapper">
+<select id="staffList" resultType="MemberDTO">
+	select 
+	*
+	from member where member_auth='staff' and member_team='무소속'
+</select>
+<select id="myStaffList" parameterType="MemberDTO" resultType="MemberDTO">
+	select
+	*
+	from member
+	where member_team=#{member_team} and member_auth='staff'
+</select>
+
+<update id="addStaff" parameterType="MemberDTO">
+	update member set
+	member_team = #{member_team},
+	member_approve = 'Y',
+	STORED_CRED = #{stored_cred}
+	where member_no = ${member_no}
+	
+</update>
+
+<update id="deleteStaff" parameterType="MemberDTO">
+	update member set
+	member_team = '무소속',
+	member_approve = 'N',
+	STORED_CRED = NULL,
+	MEMBER_SYSDATE = SYSDATE
+	where member_no = ${member_no}
+</update>
+<select id="blockList" resultType="MemberDTO">
+	select 
+	*
+	from member
+	where member_auth='block'
+</select>
+
+<update id="addBlock" parameterType="MemberDTO">
+	update member set
+	member_auth = 'block',
+	member_team = '블럭상태',
+	STORED_CRED = NULL
+	where member_no = ${member_no}
+</update>
+
+<update id="deleteBlock" parameterType="MemberDTO">
+	update member set
+	member_auth = 'staff',
+	member_approve = 'N',
+	member_team = '무소속',
+	member_sysdate = sysdate
+	where member_no = ${member_no}
+</update>
+</mapper>

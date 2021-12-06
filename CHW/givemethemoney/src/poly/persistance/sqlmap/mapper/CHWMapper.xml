@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- JAVA와 연결할 Mapper 파일 설정 -->
+<mapper namespace="poly.persistance.mapper.ICHWMapper">
+
+<select id = "CHWUpdateInfo" parameterType="CHWDTO" resultType="CHWDTO">
+<!-- SELECT 
+MEMBER_NO=#{member_no},
+MEMBER_NAME=#{member_name},
+MEMBER_ADDR1=#{member_addr1},
+MEMBER_ADDR2=#{member_addr2},
+MEMBER_PHONE=#{member_phone}
+FROM MEMBER
+ -->
+ 
+SELECT 
+	MEMBER_NO, MEMBER_NAME, MEMBER_ADDR1, MEMBER_ADDR2, MEMBER_PHONE
+FROM MEMBER
+WHERE MEMBER_NO=#{member_no}
+
+
+</select>
+
+<select id = "CHW123" resultType="CHWDTO">
+
+
+SELECT MEMBER_NO=#{member_no},
+MEMBER_NAME=#{member_name},
+MEMBER_ADDR1=#{member_addr1},
+MEMBER_ADDR2=#{member_addr2},
+MEMBER_PHONE=#{member_phone}
+FROM MEMBER
+
+
+</select>
+
+
+
+
+
+
+
+<update id ="CHWUpdate" parameterType="CHWDTO">
+
+<!--  팀 번호를 뽑아와서 팀이름이나 팀 리더이름을 바꾼다 -->
+
+UPDATE MEMBER SET
+MEMBER_NAME=#{member_name},
+MEMBER_ADDR1=#{member_addr1},
+MEMBER_ADDR2=#{member_addr2},
+MEMBER_PHONE=#{member_phone}
+ WHERE MEMBER_NO=#{member_no}
+
+
+</update>
+
+
+
+
+
+</mapper>

@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:task="http://www.springframework.org/schema/task"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+    http://www.springframework.org/schema/beans/spring-beans.xsd
+    http://www.springframework.org/schema/aop
+    http://www.springframework.org/schema/aop/spring-aop.xsd
+    http://www.springframework.org/schema/mvc
+    http://www.springframework.org/schema/mvc/spring-mvc.xsd
+    http://www.springframework.org/schema/context
+    http://www.springframework.org/schema/context/spring-context.xsd
+    http://www.springframework.org/schema/task 
+    http://www.springframework.org/schema/task/spring-task-3.1.xsd">
+
+	<!-- 어노테이션 사용하기 -->
+	<mvc:annotation-driven />
+	<bean
+		class="org.springframework.web.servlet.mvc.support.ControllerClassNameHandlerMapping" />
+
+	<context:component-scan
+		base-package="poly.controller">
+		<context:include-filter type="annotation"
+			expression="org.springframework.stereotype.Controller" />
+	</context:component-scan>
+	<context:component-scan
+		base-package="poly.interceptor">
+		<context:include-filter type="annotation"
+			expression="org.springframework.stereotype.Controller" />
+	</context:component-scan>
+	<context:component-scan
+		base-package="poly.service" />
+	<context:component-scan
+		base-package="poly.persistance.mapper" />
+	<context:component-scan
+		base-package="poly.persistance.redis" />
+	<context:component-scan
+		base-package="poly.persistance.mongo" />
+	<context:component-scan
+		base-package="poly.service.impl"></context:component-scan>
+	<task:scheduler id="jobScheduler" pool-size="10" />
+	<task:annotation-driven scheduler="jobScheduler" />
+
+	<!-- ViewResolver : 뷰 선택자 -->
+	<bean id="viewResolver"
+		class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<property name="order" value="1" />
+		<property name="viewClass">
+			<value>org.springframework.web.servlet.view.JstlView</value>
+		</property>
+
+		<!-- 스프링에서 JSP 결과값을 전달할 때 기본이 되는 루트 위치 -->
+		<property name="prefix">
+			<value>/WEB-INF/view/</value>
+		</property>
+
+		<property name="suffix">
+			<value>.jsp</value>
+		</property>
+
+		<property name="contentType">
+			<value>text/html; charset=UTF-8</value>
+		</property>
+	</bean>
+	<!-- 정적 자원은 DispatcherServlet이 처리하면 안된다 - 있는 그대로 사전 처리 없이 접근하도록 해야함 - location은 
+		실제 위치를 작성 - mapping은 접근할 주소를 작성 - **은 하위 모든 내용을 의미 -->
+	<mvc:resources location="/css/" mapping="/css/**"></mvc:resources>
+	<mvc:resources location="/icons/" mapping="/icons/**"></mvc:resources>
+	<mvc:resources location="/images/" mapping="/images/**"></mvc:resources>
+	<mvc:resources location="/js/" mapping="/js/**"></mvc:resources>
+	<mvc:resources location="/plugins/" mapping="/plugins/**"></mvc:resources>
+	<mvc:interceptors>
+		<!-- 회원 인터셉터 -->
+		<mvc:interceptor>
+			<mvc:mapping path="/master/**"/>
+			<mvc:mapping path="/leader/**"/>
+			<mvc:mapping path="/home.do"/>
+			<mvc:mapping path="/index.do"/>
+			<mvc:mapping path="/user/userInfo.do"/>
+			<mvc:mapping path="/user/userUpdate.do"/>			
+			<bean class="poly.interceptor.MemberInterceptor"></bean>
+		</mvc:interceptor>
+		<mvc:interceptor>
+			<mvc:mapping path="/master/**"/>
+			<mvc:mapping path="/leader/**"/>
+			<mvc:mapping path="/home.do"/>
+			<mvc:mapping path="/index.do"/>
+			<mvc:mapping path="/user/userInfo.do"/>
+			<mvc:mapping path="/user/userUpdate.do"/>
+			<bean class="poly.interceptor.BlockInterceptor"></bean>
+		</mvc:interceptor>
+		<mvc:interceptor>
+			<mvc:mapping path="/leader/**" />
+			<bean class="poly.interceptor.LeaderInterceptor"></bean>
+		</mvc:interceptor>
+		<mvc:interceptor>
+			<mvc:mapping path="/master/**" />
+			<bean class="poly.interceptor.MasterInterceptor"></bean>
+		</mvc:interceptor>
+		<!-- 본사관리자 인터셉터 -->
+	</mvc:interceptors>
+	<!-- 이메일 전송 도구를 등록 -->
+	<bean id="mailSender"
+		class="org.springframework.mail.javamail.JavaMailSenderImpl">
+		<property name="host" value="smtp.gmail.com" />
+		<property name="port" value="587" />
+		<property name="username" value="ohhanmin000@gmail.com" />
+		<property name="password" value="ybwtqoctmnuiuppv" />
+		<property name="javaMailProperties">
+			<props>
+				<prop key="mail.smtp.starttls.enable">true</prop>
+				<prop key="mail.transport.protocol">smtp</prop>
+				<prop key="mail.smtp.auth">true</prop>
+				<prop key="mail.debug">true</prop>
+			</props>
+		</property>
+	</bean>
+
+
+	<!-- 파일업로드 기능 -->
+	<bean id="multipartResolver"
+		class="org.springframework.web.multipart.commons.CommonsMultipartResolver"
+		p:maxUploadSize="104857600" p:maxInMemorySize="104857600" />
+</beans>

@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- JAVA와 연결할 Mapper 파일 설정 -->
+<mapper namespace="poly.persistance.mapper.IMemberMapper">
+	<select id = "login" parameterType="MemberDTO" resultType="MemberDTO">
+		select 
+			member_no,
+		    member_auth,
+		    member_approve,
+		    member_sysdate,
+			STORED_CRED
+		from member m
+		where member_id=#{member_id} and member_pw=#{member_pw}
+	</select>
+	<select id = "find_email" parameterType="MemberDTO" resultType="MemberDTO">
+		select
+		member_no,
+		member_email
+		from member
+		where member_email = #{member_email}
+	</select>
+	<update id = "changePassword" parameterType="MemberDTO">
+		update member set
+		member_pw = #{member_pw}
+		where member_no = ${member_no}
+	</update>
+
+	<update id="upcCred" parameterType="MemberDTO">
+		UPDATE MEMBER
+		SET STORED_CRED = #{stored_cred}
+		WHERE MEMBER_APPROVE='Y' AND MEMBER_NO = ${member_no}
+	</update>
+
+	<update id="removeCredDB" parameterType="MemberDTO">
+		UPDATE MEMBER
+		SET STORED_CRED = null
+		WHERE MEMBER_NO = ${member_no}
+	</update>
+
+	<select id="storeCredFromDB" parameterType="MemberDTO" resultType="MemberDTO">
+		SELECT STORED_CRED
+		FROM MEMBER
+		WHERE MEMBER_NO = ${member_no}
+	</select>
+
+	<select id="memberinfo" parameterType="MemberDTO" resultType="MemberDTO">
+		SELECT *
+		FROM MEMBER
+		WHERE MEMBER_NO = #{member_no}
+	</select>
+
+</mapper>
