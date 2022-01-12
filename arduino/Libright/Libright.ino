@@ -61,7 +61,7 @@ void oneMinuteCount(){
    * 밝기를 조금씩 어둡게 한다.
    */
   if(before_sleep_mode == true){
-    dimmer += 17;
+    dimmer += 34;
   }else{
     bright255 = analogRead(0)>>2;
   }
@@ -71,18 +71,18 @@ void oneMinuteCount(){
 void oneFiveMinuteProc(){
   ++minute;
   /*
-   * 15분이되면
+   * 5분이되면
    */
-  if(minute > 14){
+  if(minute > 4){
     /*
      * 0분으로 초기화
      */
     minute = 0;
     /*
-     * 15분동안 책을 안 읽었으면
+     * 5분동안 책을 안 읽었으면
      * 슬립모드로 전환
      */
-    if(non_sleep_proof < 5){
+    if(non_sleep_proof < 2){
       before_sleep_mode = true;
     }else{
       before_sleep_mode =false;
@@ -139,14 +139,14 @@ void loop() {
     if(senval == HIGH){
       digitalWrite(testPin, HIGH);
       non_sleep_proof ++;
-      delay(1000);
+      delay(3000);
       /*
        * 만약 before_sleep_mode인 상태에서
        * non_sleep_proof가 2보다 크다면
        * before_sleep_mode에서 탈출하고
        * 밝기를 조금 올린다.
        */
-      if(before_sleep_mode == true and non_sleep_proof > 5){
+      if(before_sleep_mode == true and non_sleep_proof > 2){
         before_sleep_mode = false;
         Serial.println("sleep모드 탈출!");
         non_sleep_proof = 0;
@@ -160,8 +160,9 @@ void loop() {
 
 
 
-    if(bright255 < 11){
-      bright255 = 0;
+    if(bright255 < 20){      
+      bright255 = 15;
+      LedBOFF();
     }
 
 
@@ -223,5 +224,3 @@ void LedBOFF(){
     digitalWrite(ledPinB[2], LOW);
     digitalWrite(ledPinB[3], LOW);
 }
-
-
