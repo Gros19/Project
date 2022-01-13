@@ -3,7 +3,7 @@
  * 시간에 관한 변수
  */
 int what_time = 0;
-int minute = 4;
+int minute = 0;
 int TIME = 1000;
 
 
@@ -12,7 +12,7 @@ int TIME = 1000;
  */
 int non_sleep_proof = 0;
 boolean before_sleep_mode = false;
-
+boolean is_sleep = false;
 /*
  * 적외선 거리 센서에 관한 변수
  */
@@ -37,7 +37,7 @@ int ledPinB[4] = {2, 4, 7, 8};
  */
 
 int bright255 = 0;
-int dimmer = 1;
+int dimmer = 0;
 
 void LedAON();
 void LedAOFF();
@@ -60,14 +60,16 @@ void oneMinuteCount(){
    * 만약 before_sleep_mode 모드이면
    * 밝기를 조금씩 어둡게 한다.
    */
-  if(before_sleep_mode == true){
-    dimmer += 34;
-    bright255 -= dimmer;
-  }else{
+    if(is_sleep == false){
+      if(before_sleep_mode == true){
+        dimmer += 34;
+        bright255 -= dimmer;
+      }
+    }
+  }else if(what_time%7 == 0){
     bright255 = analogRead(0)>>2;
   }
-  Serial.println(bright255);
- }
+    
 }
 
 void oneFiveMinuteProc(){
@@ -130,6 +132,7 @@ void loop() {
    * 값을 읽어 저장
    */
   senval = digitalRead(rlsen);
+  Serial.println(bright255);
 
 
     /*
@@ -190,11 +193,15 @@ void loop() {
     
   }else{
     Serial.print("sleep");
-    before_sleep_mode = false;
+    is_sleep = true;
+    Serial.print(is_sleep);
     LedAOFF();
     LedBOFF();
+    delay(8*3600000);
+    before_sleep_mode = false;
+    
     dimmer = 0;
-    delay(8*360000);
+    is_sleep = false;
     /*
      *   8시간 후 다시 켜기
      */
