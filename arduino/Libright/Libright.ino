@@ -3,7 +3,7 @@
  * 시간에 관한 변수
  */
 int what_time = 0;
-int minute = 0;
+int minute = 4;
 int TIME = 1000;
 
 
@@ -62,9 +62,11 @@ void oneMinuteCount(){
    */
   if(before_sleep_mode == true){
     dimmer += 34;
+    bright255 -= dimmer;
   }else{
     bright255 = analogRead(0)>>2;
   }
+  Serial.println(bright255);
  }
 }
 
@@ -115,11 +117,10 @@ void setup() {
 
  //MsTimer2 func start
  MsTimer2::start();
+ 
+ bright255 = analogRead(0)>>2;
+ Serial.println(bright255);
  Serial.println("strart!");
- bright255 = 255;
- LedBON();
- LedAON();
-
 }
 
 void loop() {
@@ -150,6 +151,7 @@ void loop() {
         before_sleep_mode = false;
         Serial.println("sleep모드 탈출!");
         non_sleep_proof = 0;
+        bright255 = analogRead(0)>>2;
         dimmer = 0;
         LedBON();
       }
@@ -159,33 +161,36 @@ void loop() {
     }
 
 
-
-    if(bright255 < 20){      
-      bright255 = 15;
-      LedBOFF();
-    }
-
-
-
   if(before_sleep_mode != true){
-//    Serial.println("슬립모드가 아니다");
+   
+    if(20 > bright255){
+      bright255 = 0;
+      LedBOFF();
+    }else if(135 > bright255){
+      LedBOFF();
+    }else if(134 < bright255 && bright255 < 171){
+      LedBHalfON();
+    }else if(bright255 > 170){
+       LedBON();
+    }
     LedAON();
-    LedBON();
-  }
-  else if (bright255 > 0){
+   
+  }else if (bright255 >= 0){
+    if(20 > bright255){
+      bright255 = 0;
+      LedBOFF();
+    }else if(135 > bright255){
+      LedBOFF();
+    }else if(134 < bright255 && bright255 < 171){
+      LedBHalfON();
+    }else if(bright255 > 170){
+       LedBON();
+    }
     LedAON();
-    LedBOFF();
-    Serial.print(bright255);
-    Serial.print(" - ");
-    Serial.print(dimmer);
-    Serial.print(" = ");
-    bright255 = bright255 - dimmer;
-    Serial.print(bright255);
-    Serial.println("슬립모드이고 밝기가 양수");
-
+    
   }else{
-    Serial.println("슬립모드이고 밝기가 0이하");
-     before_sleep_mode = false;
+    Serial.print("sleep");
+    before_sleep_mode = false;
     LedAOFF();
     LedBOFF();
     dimmer = 0;
@@ -217,6 +222,12 @@ void LedBON(){
     digitalWrite(ledPinB[1], HIGH);
     digitalWrite(ledPinB[2], HIGH);
     digitalWrite(ledPinB[3], HIGH);
+}
+void LedBHalfON(){
+    digitalWrite(ledPinB[0], HIGH);
+    digitalWrite(ledPinB[1], LOW);
+    digitalWrite(ledPinB[2], HIGH);
+    digitalWrite(ledPinB[3], LOW);
 }
 void LedBOFF(){
     digitalWrite(ledPinB[0], LOW);
